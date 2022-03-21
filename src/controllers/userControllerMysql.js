@@ -1,6 +1,28 @@
 const mysql = require('../config/mysql');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+
+const getUsers = async (req, res, next)=>{
+    try {
+        const result = await mysql.execute("SELECT * FROM users;")
+        const response = {
+            length: result.length,
+            users: result.map(user =>{
+                return {
+                    id_user: user.id_user,
+                    email: user.email,
+                    name: user.name
+                }
+            })
+        }
+        return res.status(200).send(response)
+       
+    }
+    catch (error) {
+        return res.status(500).send({message: error})
+    }
+    
+}
 
 const createUser = async (req, res, next) => {
         try {
@@ -53,4 +75,4 @@ const userLogin = async (req, res, next)=>{
     }
 }
 
-module.exports = {createUser, userLogin}
+module.exports = {createUser, userLogin, getUsers}
