@@ -1,12 +1,12 @@
 const {Router} = require('express');
-const {userRedisCreate, userGetRedis} = require('../controllers/userRedisController')
+const userRedis = require('../controllers/userRedisController')
 
 
 const redisRouter = Router();
 
-redisRouter.post('/redis', userRedisCreate)
+redisRouter.post('/redis', userRedis.userRedisCreate)
 
-redisRouter.get('/redis', userGetRedis)
+redisRouter.post('/redis/login', userRedis.userLogin)
 
 module.exports = redisRouter;
 

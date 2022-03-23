@@ -9,9 +9,9 @@ const getUsers = async (req, res, next)=>{
             length: result.length,
             users: result.map(user =>{
                 return {
-                    id_user: user.id_user,
+                    userId: user.userId,
                     email: user.email,
-                    name: user.name
+                    username: user.username
                 }
             })
         }
@@ -25,25 +25,25 @@ const getUsers = async (req, res, next)=>{
 }
 
 const createUser = async (req, res, next) => {
-        try {
-            const users = req.body.users.map(user => [
-                user.email,
-                user.name,
-                user.password
-            ])
+    try {
+        const users = req.body.users.map(user => [
+            user.email,
+            user.username,
+            bcrypt.hashSync(user.password, 10)
+        ])
     
-            query = 'INSERT INTO users (email, name, password) VALUES ?;';
-            const results = await mysql.execute(query, [ users ]);
+        query = 'INSERT INTO users (email, username, password) VALUES ?;';
+        const results = await mysql.execute(query, [ users ]);
     
-            const response = {
-                message: 'Usuário criado com sucesso',
-                createdUsers: req.body.users.map(user => { return { email: user.email } })
-            }
-            return res.status(201).send(response);
-    
-        } catch (error) {
-            return res.status(500).send({ error: error });
+        const response = {
+            message: 'Usuário criado com sucesso',
+            createdUsers: req.body.users.map(user => { return { email: user.email } })
         }
+        return res.status(201).send(response);
+    
+    } catch (error) {
+        return res.status(500).send({ error: error });
+    }
 };
 
 const userLogin = async (req, res, next)=>{
@@ -57,7 +57,7 @@ const userLogin = async (req, res, next)=>{
 
         if (await bcrypt.compareSync(req.body.password, results[0].password)) {
             const token = jwt.sign({
-                user_id: results[0].user_id,
+                userId: results[0].userId,
                 email: results[0].email
             },
             process.env.JWT_KEY,
@@ -69,7 +69,8 @@ const userLogin = async (req, res, next)=>{
                 token: token
             });
         }
-        return res.status(401).send({ message: 'Falha na autenticação' })
+        res.status(401).send({ message: 'Falha na autenticação' })
+
     } catch (error) {
         return res.status(500).send({ message: 'Falha na autenticação' });
     }

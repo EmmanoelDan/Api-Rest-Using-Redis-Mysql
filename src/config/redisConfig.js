@@ -12,9 +12,9 @@ function getRedis(value) {
     // client.get("")
 }
   
-  function setRedis(key, value) {
+  function setRedis([key, value]) {
     const syncRedisSet = promisify(client.set).bind(client);
-    return syncRedisSet(key, value);
+    return syncRedisSet([key, value]);
   
     // redisClient.set("", "")
 }

@@ -4,6 +4,7 @@ const redisRoutes = require('./user.redis.routes')
 
 const routes = Router();
 
+// middleware para mostrar corpo, rota e metodo http
 routes.use((req, res, next)=>{
     console.log(`
         request type: ${req.method} \n
